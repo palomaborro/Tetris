@@ -1,11 +1,11 @@
 window.addEventListener('load', () => {
     const game = new Game('tetris')
 
-    document.addEventListener('keypress', () => {
+    document.addEventListener('keypress', (event) => {
         game.start()
     })
 
-    document.addEventListener('keydown', (event) => {
+    document.addEventListener('keyup', (event) => {
         game.onKeyEvent(event)
       })
 });

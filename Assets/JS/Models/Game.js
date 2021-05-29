@@ -4,8 +4,9 @@ class Game {
     this.canvas.width = COLUMNS * SQUARE_SIZE;
     this.canvas.height = ROWS * SQUARE_SIZE;
     this.ctx = this.canvas.getContext('2d');
+    this.grid = this.getEmptyGrid();
 
-    this.fps = 1000 / 1;
+    this.fps = 1000 / 2;
     this.drawInterval = undefined;
 
     this.piecesInView = [];
@@ -28,7 +29,7 @@ class Game {
       this.drawInterval = setInterval(() => {
         this.clear()
         this.move();
-        this.draw();      
+        this.draw();
         this.checkCollisions();
       }, this.fps);
     }
@@ -43,6 +44,24 @@ class Game {
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText("Press ENTER to Start", this.width / 2, this.height / 2);
 
+    this.ctx.restore()
+  }
+
+  gameOver() {
+    clearInterval(this.drawInterval)
+
+    this.ctx.save()
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.width)
+
+    this.ctx.font = "20px 'Press Start 2P'";
+    this.ctx.fillStyle = 'white'
+    this.ctx.textAlign = 'center'
+    this.ctx.fillText(
+      'Game over!',
+      this.canvas.width / 2,
+      this.canvas.height / 2,
+    )
     this.ctx.restore()
   }
 
@@ -63,17 +82,48 @@ class Game {
 
     lastPiece.move();
 
-    if (lastPiece.y + (lastPiece.layout[0].length + 1) * lastPiece.width < this.ctx.canvas.height) {
+    if (lastPiece.y + (lastPiece.layout.length + 1) * lastPiece.width < this.ctx.canvas.height) {
       lastPiece.y += lastPiece.vy;
     } else {
-      lastPiece.y = this.ctx.canvas.height - lastPiece.layout[0].length * lastPiece.width
+      lastPiece.y = this.ctx.canvas.height - lastPiece.layout.length * lastPiece.width
       this.createNewPiece();
     }
   }
 
   onKeyEvent(event) {
     if (this.piecesInView.length > 0) {
-      this.piecesInView[this.piecesInView.length - 1].onKeyEvent(event);
+      const lastPiece = this.piecesInView[this.piecesInView.length - 1];
+      switch (event.keyCode) {
+        case KEY_DOWN:
+          const bottomPieces = this.piecesInView.slice(0, this.piecesInView.length - 1);
+          if (!lastPiece.collidesWith(bottomPieces)) {
+            if (lastPiece.y + (lastPiece.layout.length + 1) * lastPiece.width < lastPiece.ctx.canvas.height) {
+              lastPiece.y += lastPiece.width
+            } else {
+              lastPiece.y = lastPiece.ctx.canvas.height - lastPiece.layout.length * lastPiece.width
+            }
+          } else {
+            this.createNewPiece();
+          }
+          break;
+        case KEY_UP:
+          lastPiece.rotatePiece();
+          break;
+        case KEY_RIGHT:
+          if (lastPiece.x + (lastPiece.layout[0].length + 1) * lastPiece.width < lastPiece.ctx.canvas.width) {
+            lastPiece.x += lastPiece.width
+          } else {
+            lastPiece.x = lastPiece.ctx.canvas.width - lastPiece.layout[0].length * lastPiece.width
+          }
+          break;
+        case KEY_LEFT:
+          if (lastPiece.x - lastPiece.width > 0) {
+            lastPiece.x -= lastPiece.width
+          } else {
+            lastPiece.x = 0
+          }
+          break;
+      }
     }
   }
 
@@ -82,6 +132,32 @@ class Game {
     if (this.piecesInView[this.piecesInView.length - 1].collidesWith(bottomPieces)) {
       this.createNewPiece();
     }
+  }
+
+
+  clearLines() {
+    let lines = 0;
+
+    this.grid.forEach((row, y) => {
+      // Línea completa si el valor es mayor que vero
+      if (row.every((value) => value > 0)) {
+        lines++;
+
+        // Eliminar la línea
+        this.grid.splice(y, 1);
+
+        // Añadir línea
+        this.grid.unshift(Array(COLUMNS).fill(0));
+      }
+    });
+  }
+
+  getEmptyGrid() {
+    return Array.from({ length: ROWS }, () => Array(COLUMNS).fill(0));
+  }
+
+  notOccupied(x, y) {
+    return this.grid[y] && this.grid[y][x] === 0;
   }
 
   createNewPiece() {
