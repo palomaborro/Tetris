@@ -36,21 +36,27 @@ class Game {
   }
 
   gameOver() {
-    clearInterval(this.drawInterval)
+    clearInterval(this.drawInterval);
 
-    this.ctx.save()
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.width)
+    this.ctx.save();
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.ctx.font = "20px 'Press Start 2P'";
-    this.ctx.fillStyle = 'white'
-    this.ctx.textAlign = 'center'
+    this.ctx.fillStyle = 'white';
+    this.ctx.textAlign = 'center';
     this.ctx.fillText(
       'Game over!',
       this.canvas.width / 2,
       this.canvas.height / 2,
-    )
-    this.ctx.restore()
+    );
+    this.ctx.restore();
+  }
+
+  checkGameOver() {
+    if (this.grid[0].some(square => square === 1)) {
+      this.gameOver();
+    }
   }
 
   clear() {
@@ -76,7 +82,7 @@ class Game {
       lastPiece.y = this.ctx.canvas.height - lastPiece.layout.length * lastPiece.width
       this.placeInGrid(this.piecesInView[this.piecesInView.length - 1]);
       this.deleteFullLines();
-      console.log(this.grid);
+      this.checkGameOver();
       this.createNewPiece();
     }
   }
@@ -96,7 +102,7 @@ class Game {
           } else {
             this.placeInGrid(this.piecesInView[this.piecesInView.length - 1]);
             this.deleteFullLines();
-            console.log(this.grid);
+            this.checkGameOver();
             this.createNewPiece();
           }
           break;
@@ -126,7 +132,7 @@ class Game {
     if (this.piecesInView[this.piecesInView.length - 1].collidesWith(bottomPieces)) {
       this.placeInGrid(this.piecesInView[this.piecesInView.length - 1]);
       this.deleteFullLines();
-      console.log(this.grid);
+      this.checkGameOver();
       this.createNewPiece();
     }
   }
