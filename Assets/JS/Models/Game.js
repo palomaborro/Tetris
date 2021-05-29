@@ -3,6 +3,7 @@ class Game {
     this.canvas = document.getElementById(tetris);
     this.canvas.width = COLUMNS * SQUARE_SIZE;
     this.canvas.height = ROWS * SQUARE_SIZE;
+    this.grid = [];
     this.ctx = this.canvas.getContext('2d');
 
     this.fps = 1000 / 2;
@@ -22,7 +23,7 @@ class Game {
 
   start() {
     if (!this.drawInterval) {
-      this.startScreen();
+      this.grid = this.getEmptyGrid();
       this.createNewPiece();
       //this.sounds.theme.play()
       this.drawInterval = setInterval(() => {
@@ -32,18 +33,6 @@ class Game {
         this.checkCollisions();
       }, this.fps);
     }
-  }
-
-  startScreen() {
-    this.ctx.save()
-
-    this.ctx.fillStyle = 'white';
-    this.ctx.font = "20px 'Press Start 2P'";
-    this.ctx.textAlign = 'center';
-    this.ctx.textBaseline = 'middle';
-    this.ctx.fillText("Press ENTER to Start", this.width / 2, this.height / 2);
-
-    this.ctx.restore()
   }
 
   gameOver() {
@@ -85,6 +74,9 @@ class Game {
       lastPiece.y += lastPiece.vy;
     } else {
       lastPiece.y = this.ctx.canvas.height - lastPiece.layout.length * lastPiece.width
+      this.placeInGrid(this.piecesInView[this.piecesInView.length - 1]);
+      this.deleteFullLines();
+      console.log(this.grid);
       this.createNewPiece();
     }
   }
@@ -102,6 +94,9 @@ class Game {
               lastPiece.y = lastPiece.ctx.canvas.height - lastPiece.layout.length * lastPiece.width
             }
           } else {
+            this.placeInGrid(this.piecesInView[this.piecesInView.length - 1]);
+            this.deleteFullLines();
+            console.log(this.grid);
             this.createNewPiece();
           }
           break;
@@ -129,12 +124,64 @@ class Game {
   checkCollisions() {
     const bottomPieces = this.piecesInView.slice(0, this.piecesInView.length - 1);
     if (this.piecesInView[this.piecesInView.length - 1].collidesWith(bottomPieces)) {
+      this.placeInGrid(this.piecesInView[this.piecesInView.length - 1]);
+      this.deleteFullLines();
+      console.log(this.grid);
       this.createNewPiece();
     }
   }
 
+  getEmptyGrid() {
+    return Array.from({
+      length: ROWS
+    }, () => Array(COLUMNS).fill(0));
+  }
 
-  clearLines() {
+  placeInGrid(piece) {
+    piece.layout.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value === 1) {
+          this.grid[y + piece.y / piece.width][x + piece.x / piece.width] = 1;
+        }
+      });
+    });
+  }
+
+  findFullRow() {
+    return this.grid.findIndex(column => {
+      return column.every(piece => piece === 1);
+    });
+  }
+
+  clearLine(index) {
+    this.grid.splice(index, 1);
+    this.grid.unshift(Array(COLUMNS).fill(0));
+    this.piecesInView.forEach(piece => {
+      const i = piece.layout.findIndex((row, rowIndex) => {
+        console.log(piece.y / piece.width);
+        return (piece.y / piece.width) + rowIndex === index;
+
+      });
+      console.log(i);
+      if (i !== -1) {
+        piece.layout.splice(i, 1);
+      }
+    })
+  }
+
+  deleteFullLines() {
+    let index = this.findFullRow();
+    while (index !== -1) {
+      this.clearLine(index);
+      this.lowerLine();
+      index = this.findFullRow();
+    }
+  }
+
+  lowerLine() {
+    this.piecesInView.forEach(piece => {
+      piece.y = piece.y + SQUARE_SIZE;
+    });
   }
 
   createNewPiece() {

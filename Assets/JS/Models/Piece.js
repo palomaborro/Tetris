@@ -1,6 +1,6 @@
 class Piece {
     constructor(ctx) {
-        this.layout = allPieces[Math.floor(Math.random() * allPieces.length)];
+        this.layout = [...allPieces[Math.floor(Math.random() * allPieces.length)]];
         this.x = SQUARE_SIZE * 6;
         this.y = SQUARE_SIZE * -this.layout.length;
         this.width = SQUARE_SIZE;

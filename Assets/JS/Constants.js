@@ -5,7 +5,7 @@ const KEY_DOWN = 40;
 const COLUMNS = 14;
 const ROWS = 25;
 const SQUARE_SIZE = 25;
-// const LINES_PER_LEVEL = 10;
+const LINES_PER_LEVEL = 10;
 
 const oPiece = [
     [1, 1],
