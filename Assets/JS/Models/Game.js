@@ -4,7 +4,6 @@ class Game {
     this.canvas.width = COLUMNS * SQUARE_SIZE;
     this.canvas.height = ROWS * SQUARE_SIZE;
     this.ctx = this.canvas.getContext('2d');
-    this.grid = this.getEmptyGrid();
 
     this.fps = 1000 / 2;
     this.drawInterval = undefined;
@@ -136,28 +135,6 @@ class Game {
 
 
   clearLines() {
-    let lines = 0;
-
-    this.grid.forEach((row, y) => {
-      // Línea completa si el valor es mayor que vero
-      if (row.every((value) => value > 0)) {
-        lines++;
-
-        // Eliminar la línea
-        this.grid.splice(y, 1);
-
-        // Añadir línea
-        this.grid.unshift(Array(COLUMNS).fill(0));
-      }
-    });
-  }
-
-  getEmptyGrid() {
-    return Array.from({ length: ROWS }, () => Array(COLUMNS).fill(0));
-  }
-
-  notOccupied(x, y) {
-    return this.grid[y] && this.grid[y][x] === 0;
   }
 
   createNewPiece() {
