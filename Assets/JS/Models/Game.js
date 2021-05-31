@@ -6,7 +6,7 @@ class Game {
     this.grid = [];
     this.ctx = this.canvas.getContext('2d');
 
-    this.fps = 1000 / 2;
+    this.fps = 1000 / 2.5;
     this.drawInterval = undefined;
 
     this.piecesInView = [];
@@ -172,7 +172,7 @@ class Game {
       if (i !== -1) {
         piece.layout.splice(i, 1);
       }
-    })
+    });
   }
 
   deleteFullLines() {
