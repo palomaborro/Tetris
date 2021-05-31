@@ -10,15 +10,6 @@ class Game {
     this.drawInterval = undefined;
 
     this.piecesInView = [];
-
-
-    //const theme = new Audio('./assets/sound/mw-theme.mp3')
-    //theme.volume = 0.1
-
-    //this.sounds = {
-    // theme,
-    // coin: new Audio('./assets/sound/coin.wav')
-    //}
   }
 
   start() {
