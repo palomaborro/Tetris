@@ -63,10 +63,11 @@ class Game {
   }
 
   move() {
+    // Muevo la última pieza cogiendo el array de piezas y restándole 1 para quedarme con la última pieza
     let lastPiece = this.piecesInView[this.piecesInView.length - 1];
 
     lastPiece.move();
-
+    // Movimiento de las piezas. Una vez caen, miro su lugar en el grid, si hay que borrar línea, si es game over y creo una nueva pieza
     if (lastPiece.y + (lastPiece.layout.length + 1) * lastPiece.width < this.ctx.canvas.height) {
       lastPiece.y += lastPiece.vy;
     } else {
@@ -79,6 +80,7 @@ class Game {
   }
 
   onKeyEvent(event) {
+    // Movimiento con las teclas, a la vez que reviso las colisiones con las piezas que ya han caído
     if (this.piecesInView.length > 0) {
       const lastPiece = this.piecesInView[this.piecesInView.length - 1];
       switch (event.keyCode) {
@@ -133,7 +135,8 @@ class Game {
       length: ROWS
     }, () => Array(COLUMNS).fill(0));
   }
-
+  
+  // Hay que revisar dónde está en todo momento la pieza que cae para ver si hay ya una pieza por dónde avanza
   placeInGrid(piece) {
     piece.layout.forEach((row, y) => {
       row.forEach((value, x) => {
