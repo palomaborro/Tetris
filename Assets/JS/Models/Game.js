@@ -135,7 +135,7 @@ class Game {
       length: ROWS
     }, () => Array(COLUMNS).fill(0));
   }
-  
+
   // Hay que revisar dónde está en todo momento la pieza que cae para ver si hay ya una pieza por dónde avanza
   placeInGrid(piece) {
     piece.layout.forEach((row, y) => {
@@ -158,11 +158,9 @@ class Game {
     this.grid.unshift(Array(COLUMNS).fill(0));
     this.piecesInView.forEach(piece => {
       const i = piece.layout.findIndex((row, rowIndex) => {
-        console.log(piece.y / piece.width);
         return (piece.y / piece.width) + rowIndex === index;
 
       });
-      console.log(i);
       if (i !== -1) {
         piece.layout.splice(i, 1);
       }
